@@ -1,11 +1,15 @@
+import { CssBaseline } from '@mui/material';
 import './App.css';
-import Auth from './pages/authorization/Auth';
+import Dashboard from './pages/dashboard/Dashboard';
+// import Auth from './pages/authorization/Auth';
 
 function App() {
 
   return (
     <>
-      <Auth />
+      <CssBaseline />
+      {/* <Auth /> */}
+      <Dashboard />
     </>
   )
 }
