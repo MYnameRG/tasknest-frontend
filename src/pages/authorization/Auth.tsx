@@ -4,7 +4,8 @@ import { useState } from "react";
 const Auth = () => {
     const [isLoggedIn, setLoggedIn] = useState<boolean | null>(false);
 
-    const handleIsLoggedIn = () => {
+    const handleIsLoggedIn = (event: Event) => {
+        event.preventDefault();
         setLoggedIn(!isLoggedIn);
     }
 
@@ -26,62 +27,61 @@ const Auth = () => {
                         },
                         '& button': { marginX: 1 }
                     }}>
-
+                    
                     <h3 style={{ color: 'black' }}>{isLoggedIn ? 'Login Page' : "Signup Page"}</h3>
-                    <form>
-                        <div className="form-fields">
-                            {
-                                !isLoggedIn && <div className="name-field">
-                                    <TextField
-                                        required
-                                        id="name"
-                                        label="Name"
-                                        variant="standard"
-                                        fullWidth
-                                    />
-                                </div>
-                            }
-                            <div className="email-field">
+
+                    <div className="form-fields">
+                        {
+                            !isLoggedIn && <div className="name-field">
                                 <TextField
                                     required
-                                    id="email"
-                                    label="Email"
+                                    id="name"
+                                    label="Name"
                                     variant="standard"
                                     fullWidth
                                 />
                             </div>
-                            <div className="password-field">
-                                <TextField
-                                    id="password"
-                                    label="Password"
-                                    type="password"
-                                    variant="standard"
-                                    fullWidth
-                                />
-                            </div>
+                        }
+                        <div className="email-field">
+                            <TextField
+                                required
+                                id="email"
+                                label="Email"
+                                variant="standard"
+                                fullWidth
+                            />
                         </div>
-
-                        <div className="form-buttons">
-                            {
-                                (!isLoggedIn && <Button variant="contained" size="medium">
-                                    Register
-                                </Button>) || <Button variant="contained" size="medium">
-                                    SignIn
-                                </Button>
-                            }
+                        <div className="password-field">
+                            <TextField
+                                id="password"
+                                label="Password"
+                                type="password"
+                                variant="standard"
+                                fullWidth
+                            />
                         </div>
+                    </div>
 
-                        <br />
+                    <div className="form-buttons">
+                        {
+                            (!isLoggedIn && <Button variant="contained" size="medium">
+                                Register
+                            </Button>) || <Button variant="contained" size="medium">
+                                SignIn
+                            </Button>
+                        }
+                    </div>
 
-                        <div className="form-link">
-                            <Link
-                                component="button"
-                                variant="body1"
-                                onClick={handleIsLoggedIn}>
-                                {!isLoggedIn ? 'Account already exist ?' : 'Create an account ?'}
-                            </Link>
-                        </div>
-                    </form>
+                    <br />
+
+                    <div className="form-link">
+                        <Link
+                            component="button"
+                            variant="body1"
+                            onClick={handleIsLoggedIn}>
+                            {!isLoggedIn ? 'Account already exist ?' : 'Create an account ?'}
+                        </Link>
+                    </div>
                 </Box>
             </Container>
         </>

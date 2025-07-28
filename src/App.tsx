@@ -1,11 +1,11 @@
 import './App.css';
-// import Auth from './pages/authorization/Auth';
+import Auth from './pages/authorization/Auth';
 
 function App() {
 
   return (
     <>
-      {/* <Auth /> */}
+      <Auth />
     </>
   )
 }
