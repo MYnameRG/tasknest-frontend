@@ -1,5 +1,9 @@
-#root {
-  max-width: 1280px;
+header {
+  margin: 0 auto;
+  text-align: center;
+}
+
+article {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;

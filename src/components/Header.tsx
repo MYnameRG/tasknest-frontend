@@ -1,23 +1,43 @@
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
-import { Menu, MenuIcon } from '@mui/material';
+import { useState, type MouseEvent } from 'react';
+import { Adb as AdbIcon, Menu as MenuIcon } from "@mui/icons-material";
+import {
+    AppBar, Box,
+    Container, Menu,
+    MenuItem, Tooltip,
+    Button, Avatar,
+    Typography, IconButton,
+    Toolbar
+} from '@mui/material';
 
-const Header = () => {
+const pages = ['Dashboard', 'Manage Task', 'Pricing', 'Blog'];
+const settings = ['Profile', 'Account', 'Subscription', 'Logout'];
+
+function Header() {
+    const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+
+    const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
+        setAnchorElNav(event.currentTarget);
+    };
+
+    const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
+    };
+
+    const handleCloseNavMenu = () => {
+        setAnchorElNav(null);
+    };
+
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
+
     return (
         <>
-            <AppBar position="static">
-                <Container maxWidth="xl">
+            <AppBar position="sticky">
+                <Container maxWidth="xl" style={{ width: "100%" }}>
                     <Toolbar disableGutters>
-                        <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+                        <AdbIcon  sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
                         <Typography
                             variant="h6"
                             noWrap
@@ -33,7 +53,7 @@ const Header = () => {
                                 textDecoration: 'none',
                             }}
                         >
-                            LOGO
+                            TASKNEST
                         </Typography>
 
                         <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -70,6 +90,7 @@ const Header = () => {
                                 ))}
                             </Menu>
                         </Box>
+
                         <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
                         <Typography
                             variant="h5"
@@ -87,8 +108,9 @@ const Header = () => {
                                 textDecoration: 'none',
                             }}
                         >
-                            LOGO
+                            TASKNEST
                         </Typography>
+
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                             {pages.map((page) => (
                                 <Button
@@ -100,6 +122,7 @@ const Header = () => {
                                 </Button>
                             ))}
                         </Box>
+
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Open settings">
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
