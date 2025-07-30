@@ -1,15 +1,17 @@
 import { useActionState, type Dispatch, type FC, type SetStateAction } from "react";
 import type { Task } from "../models/Task.model";
-import { Avatar, Box, Button, Card, CardContent, CardHeader, Divider, TextareaAutosize, TextField, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, CardContent, CardHeader, TextareaAutosize, TextField, Typography } from "@mui/material";
 import { Save as SaveIcon } from '@mui/icons-material';
 import { red } from "@mui/material/colors";
+import type { Notification } from "../models/Notification.model";
 
 type Props = {
     tasks: Task[],
-    setTasks: Dispatch<SetStateAction<Task[]>>
+    setTasks: Dispatch<SetStateAction<Task[]>>,
+    setNotification: Dispatch<SetStateAction<Notification>>
 }
 
-const Content: FC<Props> = ({ tasks, setTasks }) => {
+const Content: FC<Props> = ({ tasks, setTasks, setNotification }) => {
     const handleSubmit = async (_: any, formData: FormData) => {
         const title = formData.get("title")?.toString() || "";
         const content = formData.get("description")?.toString() || "";
@@ -23,6 +25,8 @@ const Content: FC<Props> = ({ tasks, setTasks }) => {
             createdAt: new Date(),
             updatedAt: new Date()
         }]);
+
+        setNotification({ type: 'Manage-Task', message: 'Added the task sucessfully !!', isOpen: true });
     };
 
     const [_, formAction, isPending] = useActionState(handleSubmit, undefined);
@@ -31,8 +35,6 @@ const Content: FC<Props> = ({ tasks, setTasks }) => {
         <>
             <Box
                 component="article">
-                <h3>{tasks?.length} task is created..</h3>
-
                 <Box
                     component="form"
                     sx={{ '& .MuiTextField-root': { m: 1, width: '25ch' } }}
@@ -105,7 +107,7 @@ const Content: FC<Props> = ({ tasks, setTasks }) => {
                                     </Typography>
 
                                     <br />
-                                    
+
                                     <Typography variant="body2" color="text.secondary">
                                         Updated On: {task?.updatedAt.toLocaleString()}
                                     </Typography>
