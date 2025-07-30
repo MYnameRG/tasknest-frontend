@@ -20,12 +20,12 @@ function Header() {
         setAnchorElNav(event.currentTarget);
     };
 
-    const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
-        setAnchorElUser(event.currentTarget);
-    };
-
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
+    };
+
+    const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
     };
 
     const handleCloseUserMenu = () => {
@@ -37,7 +37,9 @@ function Header() {
             <AppBar position="sticky">
                 <Container maxWidth="xl" style={{ width: "100%" }}>
                     <Toolbar disableGutters>
-                        <AdbIcon  sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+                        {/* Desktop */}
+                        <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+
                         <Typography
                             variant="h6"
                             noWrap
@@ -91,7 +93,9 @@ function Header() {
                             </Menu>
                         </Box>
 
-                        <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+                        {/* Mobile */}
+                        {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+
                         <Typography
                             variant="h5"
                             noWrap
@@ -121,8 +125,9 @@ function Header() {
                                     {page}
                                 </Button>
                             ))}
-                        </Box>
+                        </Box> */}
 
+                        {/* Settings */}
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Open settings">
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

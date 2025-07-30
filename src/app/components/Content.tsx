@@ -3,15 +3,14 @@ import type { Task } from "../models/Task.model";
 import { Avatar, Box, Button, Card, CardContent, CardHeader, TextareaAutosize, TextField, Typography } from "@mui/material";
 import { Save as SaveIcon } from '@mui/icons-material';
 import { red } from "@mui/material/colors";
-import type { Notification } from "../models/Notification.model";
+// import type { Notification } from "../models/Notification.model";
 
 type Props = {
     tasks: Task[],
-    setTasks: Dispatch<SetStateAction<Task[]>>,
-    setNotification: Dispatch<SetStateAction<Notification>>
+    setTasks: Dispatch<SetStateAction<Task[]>>
 }
 
-const Content: FC<Props> = ({ tasks, setTasks, setNotification }) => {
+const Content: FC<Props> = ({ tasks, setTasks }) => {
     const handleSubmit = async (_: any, formData: FormData) => {
         const title = formData.get("title")?.toString() || "";
         const content = formData.get("description")?.toString() || "";
@@ -26,7 +25,7 @@ const Content: FC<Props> = ({ tasks, setTasks, setNotification }) => {
             updatedAt: new Date()
         }]);
 
-        setNotification({ type: 'Manage-Task', message: 'Added the task sucessfully !!', isOpen: true });
+        // setNotification({ type: 'success', message: 'Added the task sucessfully !!', isOpen: true });
     };
 
     const [_, formAction, isPending] = useActionState(handleSubmit, undefined);

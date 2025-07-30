@@ -1,10 +1,11 @@
 import { Box, Button, Container, Link, TextField } from "@mui/material";
+import { Link as RouteLink } from "react-router";
 import { useState } from "react";
 
-const Auth = () => {
+const Authentication = () => {
     const [isLoggedIn, setLoggedIn] = useState<boolean | null>(false);
 
-    const handleIsLoggedIn = (event: Event) => {
+    const handleIsLoggedIn = (event: any) => {
         event.preventDefault();
         setLoggedIn(!isLoggedIn);
     }
@@ -27,7 +28,7 @@ const Auth = () => {
                         },
                         '& button': { marginX: 1 }
                     }}>
-                    
+
                     <h3 style={{ color: 'black' }}>{isLoggedIn ? 'Login Page' : "Signup Page"}</h3>
 
                     <div className="form-fields">
@@ -42,6 +43,7 @@ const Auth = () => {
                                 />
                             </div>
                         }
+
                         <div className="email-field">
                             <TextField
                                 required
@@ -51,6 +53,7 @@ const Auth = () => {
                                 fullWidth
                             />
                         </div>
+
                         <div className="password-field">
                             <TextField
                                 id="password"
@@ -64,11 +67,14 @@ const Auth = () => {
 
                     <div className="form-buttons">
                         {
-                            (!isLoggedIn && <Button variant="contained" size="medium">
-                                Register
-                            </Button>) || <Button variant="contained" size="medium">
-                                SignIn
-                            </Button>
+                            (!isLoggedIn &&
+                                <Button variant="outlined" size="medium">
+                                    <RouteLink style={{ backgroundColor: 'transparent', textDecoration: 'none' }} to="/en/main/dashboard">Register</RouteLink>
+                                </Button>)
+                            ||
+                            (<Button variant="outlined" size="medium">
+                                <RouteLink style={{ backgroundColor: 'transparent', textDecoration: 'none' }} to="/en/main/dashboard">SignIn</RouteLink>
+                            </Button>)
                         }
                     </div>
 
@@ -78,7 +84,7 @@ const Auth = () => {
                         <Link
                             component="button"
                             variant="body1"
-                            onClick={handleIsLoggedIn}>
+                            onClick={(event) => handleIsLoggedIn(event)}>
                             {!isLoggedIn ? 'Account already exist ?' : 'Create an account ?'}
                         </Link>
                     </div>
@@ -88,4 +94,4 @@ const Auth = () => {
     );
 };
 
-export default Auth;
+export default Authentication;

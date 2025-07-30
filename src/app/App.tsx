@@ -1,20 +1,18 @@
 import { CssBaseline } from '@mui/material';
 import './App.css';
-import Dashboard from './pages/main/Main';
 import AlertPopup from './components/Notification';
 import { useState } from 'react';
 import type { Notification } from './models/Notification.model';
-// import Auth from './pages/authorization/Auth';
+import { Outlet } from 'react-router';
 
-function App() {
+const App = () => {
   const [notification, setNotification] = useState<Notification>({} as Notification);
 
   return (
     <>
       <CssBaseline />
       <AlertPopup notification={notification} setNotification={setNotification} />
-      {/* <Auth /> */}
-      <Dashboard setNotification={setNotification} />
+      <Outlet context={{ setNotification: setNotification }} />
     </>
   )
 }
