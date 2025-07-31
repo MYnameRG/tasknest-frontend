@@ -1,5 +1,5 @@
 import { useState, type MouseEvent } from 'react';
-import { Adb as AdbIcon, Menu as MenuIcon } from "@mui/icons-material";
+import { Adb as AdbIcon } from "@mui/icons-material";
 import {
     AppBar, Box,
     Container, Menu,
@@ -8,21 +8,28 @@ import {
     Typography, IconButton,
     Toolbar
 } from '@mui/material';
+import { NavLink } from 'react-router';
 
-const pages = ['Dashboard', 'Manage Task', 'Pricing', 'Blog'];
+const pages = [
+    {
+        id: 'dashboard',
+        value: 'Dashboard'
+    }, {
+        id: 'manage-task',
+        value: 'Manage Task'
+    }, {
+        id: 'pricing',
+        value: 'Pricing'
+    }, {
+        id: 'blog',
+        value: 'Blog'
+    }
+];
+
 const settings = ['Profile', 'Account', 'Subscription', 'Logout'];
 
-function Header() {
-    const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+const Header = () => {
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-
-    const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
-        setAnchorElNav(event.currentTarget);
-    };
-
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
 
     const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
@@ -35,7 +42,7 @@ function Header() {
     return (
         <>
             <AppBar position="sticky">
-                <Container maxWidth="xl" style={{ width: "100%" }}>
+                <Container maxWidth="xl" style={{ width: "100%", maxWidth: 'none' }}>
                     <Toolbar disableGutters>
                         {/* Desktop */}
                         <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -44,7 +51,6 @@ function Header() {
                             variant="h6"
                             noWrap
                             component="a"
-                            href="#app-bar-with-responsive-menu"
                             sx={{
                                 mr: 2,
                                 display: { xs: 'none', md: 'flex' },
@@ -58,74 +64,22 @@ function Header() {
                             TASKNEST
                         </Typography>
 
-                        <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                            <IconButton
-                                size="large"
-                                aria-label="account of current user"
-                                aria-controls="menu-appbar"
-                                aria-haspopup="true"
-                                onClick={handleOpenNavMenu}
-                                color="inherit"
-                            >
-                                <MenuIcon />
-                            </IconButton>
-                            <Menu
-                                id="menu-appbar"
-                                anchorEl={anchorElNav}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                }}
-                                open={Boolean(anchorElNav)}
-                                onClose={handleCloseNavMenu}
-                                sx={{ display: { xs: 'block', md: 'none' } }}
-                            >
-                                {pages.map((page) => (
-                                    <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                        <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
-                                    </MenuItem>
-                                ))}
-                            </Menu>
-                        </Box>
-
-                        {/* Mobile */}
-                        {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-
-                        <Typography
-                            variant="h5"
-                            noWrap
-                            component="a"
-                            href="#app-bar-with-responsive-menu"
-                            sx={{
-                                mr: 2,
-                                display: { xs: 'flex', md: 'none' },
-                                flexGrow: 1,
-                                fontFamily: 'monospace',
-                                fontWeight: 700,
-                                letterSpacing: '.3rem',
-                                color: 'inherit',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            TASKNEST
-                        </Typography>
-
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                             {pages.map((page) => (
-                                <Button
-                                    key={page}
-                                    onClick={handleCloseNavMenu}
-                                    sx={{ my: 2, color: 'white', display: 'block' }}
+                                <NavLink
+                                    key={page?.id}
+                                    style={{ textDecoration: "none" }}
+                                    to={`/en/main/${page?.id}`}
+                                    className={({ isActive }) =>
+                                        isActive ? "active-link" : ""
+                                    }
                                 >
-                                    {page}
-                                </Button>
+                                    <Button
+                                        sx={{ my: 2, color: 'white', display: 'block' }}
+                                    > {page?.value} </Button>
+                                </NavLink>
                             ))}
-                        </Box> */}
+                        </Box>
 
                         {/* Settings */}
                         <Box sx={{ flexGrow: 0 }}>
@@ -134,6 +88,7 @@ function Header() {
                                     <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
                                 </IconButton>
                             </Tooltip>
+
                             <Menu
                                 sx={{ mt: '45px' }}
                                 id="menu-appbar"

@@ -8,3 +8,7 @@ article {
   padding: 2rem;
   text-align: center;
 }
+
+.active-link {
+  opacity: 0.5;
+}
