@@ -1,23 +1,19 @@
 import { type Dispatch, type FC, type SetStateAction, type SyntheticEvent } from 'react';
 import { Alert, Slide, Snackbar, type SnackbarCloseReason } from '@mui/material';
 import type { SlideProps } from '@mui/material/Slide';
-import type { Notification } from '../models/Notification.model';
+import type { NotificationModel } from '../models/Notification.model';
 
 type Props = {
-    notification: Notification,
-    setNotification: Dispatch<SetStateAction<Notification>>
+    notification: NotificationModel,
+    setNotification: Dispatch<SetStateAction<NotificationModel>>
 }
 
-const AlertPopup: FC<Props> = ({ notification, setNotification }) => {
-    const handleClose = (
-        _?: SyntheticEvent | Event,
-        reason?: SnackbarCloseReason,
-    ) => {
+const Notification: FC<Props> = ({ notification, setNotification }) => {
+    const handleClose = (_?: SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
+        setNotification({ ...notification, isOpen: false });
         if (reason === 'clickaway') {
             return;
         }
-
-        setNotification({ ...notification, isOpen: false });
     };
 
     return (
@@ -41,4 +37,4 @@ const AlertPopup: FC<Props> = ({ notification, setNotification }) => {
     );
 }
 
-export default AlertPopup;
+export default Notification;

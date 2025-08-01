@@ -32,13 +32,22 @@ const Dashboard = () => {
                         display: 'grid',
                         gridAutoFlow: 'column',
                         gridAutoColumns: 'min-content',
-                        height: "18rem",
+                        height: "15rem",
                         overflow: 'auto'
                     }}
                 >
                     {
                         tasks.map((task) => (
-                            <Card key={task?.tid} variant="outlined" sx={{ display: 'inline-block', padding: '20px', marginRight: '8px', width: 240, maxWidth: 300 }}>
+                            <Card
+                                key={task?.tid}
+                                variant="outlined"
+                                sx={{
+                                    display: 'inline-block',
+                                    padding: '20px',
+                                    marginRight: '8px',
+                                    width: 240,
+                                    maxWidth: 300
+                                }}>
                                 <CardHeader style={{ padding: 0, textAlign: "left" }}
                                     avatar={
                                         <Avatar sx={{ bgcolor: red[500] }}>
@@ -75,7 +84,7 @@ const Dashboard = () => {
                         display: 'grid',
                         gridAutoFlow: 'column',
                         gridAutoColumns: 'min-content',
-                        height: "18rem",
+                        height: "15rem",
                         overflow: 'auto'
                     }}
                 >
