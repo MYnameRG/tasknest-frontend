@@ -1,5 +1,5 @@
 export interface Task {
-  tid: number;
+  tid: string;
   title: string;
   content?: string;
   updatedAt: Date;

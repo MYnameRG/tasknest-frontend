@@ -27,6 +27,8 @@ const Dailog: FC<Props> = ({ dialog, setDialog }) => {
         <>
             <Dialog
                 open={dialog?.isOpen}
+                fullWidth={true}
+                maxWidth={'sm'}
                 onClose={handleClose}
             >
                 <DialogTitle>{dialog?.title}</DialogTitle>
@@ -43,7 +45,7 @@ const Dailog: FC<Props> = ({ dialog, setDialog }) => {
                         </DialogContentText>
                         {dialog?.modalBody}
                     </DialogContent>
-                    <DialogActions>
+                    <DialogActions style={{ padding: '20px' }}>
                         <Button
                             type="submit"
                             color="success"

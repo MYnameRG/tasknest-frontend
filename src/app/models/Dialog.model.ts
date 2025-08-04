@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 export interface DialogModel {
     title?: string;
-    subTitle?: string;
+    subTitle?: string | null;
     submitBtnText?: string;
     closeBtnText?: string;
     isOpen: boolean;

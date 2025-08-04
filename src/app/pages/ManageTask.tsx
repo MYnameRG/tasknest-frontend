@@ -1,9 +1,9 @@
-import { type Dispatch, type FC, type SetStateAction, type SyntheticEvent } from "react";
+import { type Dispatch, type FC, type SetStateAction } from "react";
 import Header from "../components/Header";
 import type { Task } from "../models/Task.model";
 import { useOutletContext } from "react-router";
-import { Save as SaveIcon, AddRounded as AddIcon, UpdateRounded as UpdateIcon, CancelRounded as CancelIcon } from '@mui/icons-material';
-import { Avatar, Box, Button, Card, CardContent, CardHeader, TextareaAutosize, TextField, Typography } from "@mui/material";
+import { Save as SaveIcon, AddRounded as AddIcon, UpdateRounded as UpdateIcon, CancelRounded as CancelIcon, Clear as ClearIcon } from '@mui/icons-material';
+import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, TextareaAutosize, TextField, Typography } from "@mui/material";
 import type { NotificationModel } from "../models/Notification.model";
 import type { DialogModel } from "../models/Dialog.model";
 import { red } from "@mui/material/colors";
@@ -19,13 +19,13 @@ type Context = {
 const ManageTask: FC<any> = () => {
     const { tasks, dialog, setTasks, setNotification, setDialog } = useOutletContext<Context>();
 
-    const openManageTaskDialog = (_?: SyntheticEvent | Event) => {
+    const handleOnManageTask = (task: Task | null) => {
         setDialog({
             isOpen: true,
-            title: 'Add New Task',
-            subTitle: 'New Task will be created from this place.',
-            submitIconComponent: <SaveIcon />,
-            submitBtnText: 'Save',
+            title: (task && 'Edit Task') || 'Add New Task',
+            subTitle: null,
+            submitIconComponent: (task && <UpdateIcon />) || <SaveIcon />,
+            submitBtnText: (task && 'Update') || 'Save',
             cancelIconComponent: <CancelIcon />,
             closeBtnText: "Cancel",
             modalBody: (
@@ -35,8 +35,12 @@ const ManageTask: FC<any> = () => {
                         name="title"
                         placeholder="Add Title"
                         id="title"
+                        defaultValue={task && task?.title}
                         inputMode="text"
-                        style={{ width: 500 }}
+                        style={{
+                            width: '100%',
+                            margin: 0
+                        }}
                     />
 
                     <br />
@@ -46,7 +50,8 @@ const ManageTask: FC<any> = () => {
                         minRows={3}
                         placeholder="Description"
                         id="description"
-                        style={{ width: 500, height: 100, padding: 10 }}
+                        defaultValue={task && task?.content}
+                        style={{ width: '100%', height: 100, padding: 10 }}
                         inputMode="text"
                     />
                 </>
@@ -57,25 +62,42 @@ const ManageTask: FC<any> = () => {
 
                 await new Promise((resolve, _) => setTimeout(() => resolve(null), 1000));
 
-                setTasks([...tasks, {
-                    tid: tasks?.length,
-                    title,
-                    content,
-                    createdAt: new Date(),
-                    updatedAt: new Date()
-                }]);
+                const _task = tasks.find((t: Task) => t?.tid == task?.tid);
+                if (_task) {
+                    _task.title = title;
+                    _task.content = content;
+                    _task.updatedAt = new Date();
+                }
+
+                if (task) {
+                    const updatedList = tasks?.filter((t: Task) => t?.tid != task?.tid);
+                    setTasks([...updatedList, { ..._task }]);
+
+                    setNotification({ type: 'success', message: 'Updated the task sucessfully !!', isOpen: true });
+                } else {
+                    setTasks([...tasks, {
+                        tid: tasks?.length.toString(),
+                        title,
+                        content,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    }])
+
+                    setNotification({ type: 'success', message: 'Added the task sucessfully !!', isOpen: true });
+                }
 
                 setDialog({ ...dialog, isOpen: false });
-
-                setNotification({ type: 'success', message: 'Added the task sucessfully !!', isOpen: true });
             },
         });
+    }
+
+    const handleOnDeleteTask = (taskId: string) => {
+        setTasks([...tasks?.filter(task => taskId != null && task?.tid != taskId.toString())]);
     }
 
     return (
         <>
             <Header />
-
             <Box
                 className="heading-bar"
                 component="div"
@@ -105,19 +127,14 @@ const ManageTask: FC<any> = () => {
                     <Button
                         variant="contained"
                         sx={{ mx: 1 }}
-                        startIcon={<UpdateIcon />}>
-                        Update Task
-                    </Button>
-                    <Button
-                        variant="contained"
-                        sx={{ mx: 1 }}
-                        onClick={openManageTaskDialog}
+                        onClick={() => handleOnManageTask(null)}
                         startIcon={<AddIcon />}>
                         Add Task
                     </Button>
                 </Box>
             </Box>
 
+            {/* List of Tasks */}
             <Box
                 className="task-list-box"
                 component="div"
@@ -129,9 +146,9 @@ const ManageTask: FC<any> = () => {
                 }}
             >
                 {
-                    tasks.map((task) => (
+                    tasks.map((task, index) => (
                         <Card
-                            key={task?.tid}
+                            key={index}
                             variant="outlined"
                             sx={{
                                 display: 'inline-block',
@@ -140,18 +157,28 @@ const ManageTask: FC<any> = () => {
                                 width: 240,
                                 maxWidth: 300
                             }}>
-                            <CardHeader style={{ padding: 0, textAlign: "left" }}
+                            <CardHeader
+                                style={{ padding: 0, textAlign: "left" }}
                                 avatar={
                                     <Avatar sx={{ bgcolor: red[500] }}>
                                         R
                                     </Avatar>
+                                }
+                                action={
+                                    <IconButton className="delete-icon">
+                                        <ClearIcon onClick={() => handleOnDeleteTask(task?.tid)} />
+                                    </IconButton>
                                 }
                                 title={task?.title}
                                 subheader={task?.createdAt.toLocaleString()}
                             />
 
                             <br />
-                            <CardContent style={{ padding: 0, textAlign: "left" }} sx={{ height: "100%" }}>
+                            <CardContent
+                                style={{
+                                    padding: 0,
+                                    textAlign: "left"
+                                }}>
                                 <Typography variant="body2" color="text.secondary">
                                     {task?.content}
                                 </Typography>
@@ -162,6 +189,17 @@ const ManageTask: FC<any> = () => {
                                     Updated On: {task?.updatedAt.toLocaleString()}
                                 </Typography>
                             </CardContent>
+                            <CardActions sx={{
+                                padding: 0,
+                                margin: '15px 0 0 0'
+                            }}>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => handleOnManageTask(task)}
+                                    startIcon={<UpdateIcon />}>
+                                    Update
+                                </Button>
+                            </CardActions>
                         </Card>
                     ))
                 }

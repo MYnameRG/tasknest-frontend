@@ -65,20 +65,22 @@ const Header = () => {
                         </Typography>
 
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                            {pages.map((page) => (
-                                <NavLink
-                                    key={page?.id}
-                                    style={{ textDecoration: "none" }}
-                                    to={`/en/main/${page?.id}`}
-                                    className={({ isActive }) =>
-                                        isActive ? "active-link" : ""
-                                    }
-                                >
-                                    <Button
-                                        sx={{ my: 2, color: 'white', display: 'block' }}
-                                    > {page?.value} </Button>
-                                </NavLink>
-                            ))}
+                            {
+                                pages.map((page) => (
+                                    <NavLink
+                                        key={page?.id}
+                                        style={{ textDecoration: "none" }}
+                                        to={`/en/main/${page?.id}`}
+                                        className={({ isActive }) =>
+                                            isActive ? "active-link" : ""
+                                        }
+                                    >
+                                        <Button
+                                            sx={{ my: 2, color: 'white', display: 'block' }}
+                                        > {page?.value} </Button>
+                                    </NavLink>
+                                ))
+                            }
                         </Box>
 
                         {/* Settings */}
@@ -105,11 +107,13 @@ const Header = () => {
                                 open={Boolean(anchorElUser)}
                                 onClose={handleCloseUserMenu}
                             >
-                                {settings.map((setting) => (
-                                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                        <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
-                                    </MenuItem>
-                                ))}
+                                {
+                                    settings.map((setting) => (
+                                        <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                            <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                                        </MenuItem>
+                                    ))
+                                }
                             </Menu>
                         </Box>
                     </Toolbar>
