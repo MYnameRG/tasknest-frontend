@@ -1,13 +1,52 @@
 import { Box, Button, Container, Link, TextField } from "@mui/material";
-import { Link as RouteLink } from "react-router";
-import { useState } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import { useAuthService } from "../hooks/useAuthService";
+import { useNavigate, useOutletContext } from "react-router";
+import type { NotificationModel } from "../interfaces/Notification.model";
+
+type Context = {
+    setNotification: Dispatch<SetStateAction<NotificationModel>>
+};
 
 const Authentication = () => {
+    const navigate = useNavigate();
+    const { setNotification } = useOutletContext<Context>();
+    const { isLoading, isError, registerUser, loginUser } = useAuthService();
     const [isLoggedIn, setLoggedIn] = useState<boolean | null>(false);
 
     const handleIsLoggedIn = (event: any) => {
         event.preventDefault();
         setLoggedIn(!isLoggedIn);
+    }
+
+    const handleOnSumit = async (event: any) => {
+        event.preventDefault();
+
+        try {
+            const formData = new FormData(event.currentTarget);
+            if (isLoggedIn) {
+                await loginUser({
+                    email: formData.get('email') as string,
+                    password: formData.get('password') as string
+                });
+
+                setNotification({ type: 'success', message: 'LoggedIn Sucessfully !!', isOpen: true });
+            } else {
+                await registerUser({
+                    name: formData.get('name') as string,
+                    email: formData.get('email') as string,
+                    password: formData.get('password') as string
+                });
+
+                setNotification({ type: 'success', message: 'Registered Sucessfully !!', isOpen: true });
+            }
+
+            if (!isError) {
+                navigate("/en/main/dashboard");
+            }
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     return (
@@ -17,6 +56,7 @@ const Authentication = () => {
                     component="form"
                     noValidate
                     autoComplete="off"
+                    onSubmit={handleOnSumit}
                     sx={{
                         width: 800,
                         height: '70vh',
@@ -37,6 +77,7 @@ const Authentication = () => {
                                 <TextField
                                     required
                                     id="name"
+                                    name="name"
                                     label="Name"
                                     variant="standard"
                                     fullWidth
@@ -48,6 +89,7 @@ const Authentication = () => {
                             <TextField
                                 required
                                 id="email"
+                                name="email"
                                 label="Email"
                                 variant="standard"
                                 fullWidth
@@ -57,6 +99,7 @@ const Authentication = () => {
                         <div className="password-field">
                             <TextField
                                 id="password"
+                                name="password"
                                 label="Password"
                                 type="password"
                                 variant="standard"
@@ -68,12 +111,21 @@ const Authentication = () => {
                     <div className="form-buttons">
                         {
                             (!isLoggedIn &&
-                                <Button variant="outlined" size="medium">
-                                    <RouteLink style={{ backgroundColor: 'transparent', textDecoration: 'none' }} to="/en/main/dashboard">Register</RouteLink>
-                                </Button>)
-                            ||
-                            (<Button variant="outlined" size="medium">
-                                <RouteLink style={{ backgroundColor: 'transparent', textDecoration: 'none' }} to="/en/main/dashboard">SignIn</RouteLink>
+                                <Button
+                                    type="submit"
+                                    variant="outlined"
+                                    size="medium"
+                                    loading={isLoading}
+                                    loadingPosition="start">
+                                    Register
+                                </Button>) ||
+                            (<Button
+                                type="submit"
+                                variant="outlined"
+                                size="medium"
+                                loading={isLoading}
+                                loadingPosition="start">
+                                SignIn
                             </Button>)
                         }
                     </div>

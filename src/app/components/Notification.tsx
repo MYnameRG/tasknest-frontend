@@ -1,7 +1,7 @@
 import { type Dispatch, type FC, type SetStateAction, type SyntheticEvent } from 'react';
 import { Alert, Slide, Snackbar, type SnackbarCloseReason } from '@mui/material';
 import type { SlideProps } from '@mui/material/Slide';
-import type { NotificationModel } from '../models/Notification.model';
+import type { NotificationModel } from '../interfaces/Notification.model';
 
 type Props = {
     notification: NotificationModel,

@@ -19,7 +19,7 @@ const AppRoutes = () => {
                         <Route path="blog" element={<Blog />} />
                     </Route>
                 </Route>
-                <Route path="*" element={<Navigate to="/en/authentication" />} />
+                <Route path="**" element={<Navigate to="/en/authentication" />} />
             </Routes>
         </>
     )

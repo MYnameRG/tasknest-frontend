@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { useActionState, type Dispatch, type FC, type SetStateAction } from "react";
-import type { DialogModel } from "../models/Dialog.model";
+import type { DialogModel } from "../interfaces/Dialog.model";
 
 type Props = {
     dialog: DialogModel,

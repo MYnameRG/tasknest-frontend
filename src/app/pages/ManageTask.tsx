@@ -1,12 +1,13 @@
-import { type Dispatch, type FC, type SetStateAction } from "react";
+import { useEffect, type Dispatch, type FC, type SetStateAction } from "react";
 import Header from "../components/Header";
 import type { Task } from "../models/Task.model";
 import { useOutletContext } from "react-router";
 import { Save as SaveIcon, AddRounded as AddIcon, UpdateRounded as UpdateIcon, CancelRounded as CancelIcon, Clear as ClearIcon } from '@mui/icons-material';
 import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, TextareaAutosize, TextField, Typography } from "@mui/material";
-import type { NotificationModel } from "../models/Notification.model";
-import type { DialogModel } from "../models/Dialog.model";
+import type { NotificationModel } from "../interfaces/Notification.model";
+import type { DialogModel } from "../interfaces/Dialog.model";
 import { red } from "@mui/material/colors";
+import { useTaskService } from "../hooks/useTaskService";
 
 type Context = {
     tasks: Task[],
@@ -17,7 +18,12 @@ type Context = {
 };
 
 const ManageTask: FC<any> = () => {
-    const { tasks, dialog, setTasks, setNotification, setDialog } = useOutletContext<Context>();
+    const { dialog, setTasks, setNotification, setDialog } = useOutletContext<Context>();
+    const { tasks, fetchTasks } = useTaskService();
+
+    useEffect(() => {
+        fetchTasks();
+    }, []);
 
     const handleOnManageTask = (task: Task | null) => {
         setDialog({
