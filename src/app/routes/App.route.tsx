@@ -7,6 +7,8 @@ import Pricing from "../pages/Pricing";
 import Blog from "../pages/Blog";
 
 const AppRoutes = () => {
+    console.log('AppRoutes mounted');
+    
     return (
         <>
             <Routes>
@@ -19,7 +21,7 @@ const AppRoutes = () => {
                         <Route path="blog" element={<Blog />} />
                     </Route>
                 </Route>
-                <Route path="**" element={<Navigate to="/en/authentication" />} />
+                <Route path="*" element={<Navigate to="/en/authentication" />} />
             </Routes>
         </>
     )

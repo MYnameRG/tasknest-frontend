@@ -7,25 +7,28 @@ import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, IconBu
 import type { NotificationModel } from "../interfaces/Notification.model";
 import type { DialogModel } from "../interfaces/Dialog.model";
 import { red } from "@mui/material/colors";
-import { useTaskService } from "../hooks/useTaskService";
 
 type Context = {
     tasks: Task[],
-    dialog: DialogModel,
-    setTasks: Dispatch<SetStateAction<Task[]>>,
+    isTaskError: boolean,
+    fetchTasks: Function
+    createTask: Function,
+    deleteTask: Function,
+    updateTask: Function,
     setNotification: Dispatch<SetStateAction<NotificationModel>>,
+    dialog: DialogModel,
     setDialog: Dispatch<SetStateAction<DialogModel>>
 };
 
 const ManageTask: FC<any> = () => {
-    const { dialog, setTasks, setNotification, setDialog } = useOutletContext<Context>();
-    const { tasks, fetchTasks } = useTaskService();
+    console.log('ManageTask mounted');
+    const { tasks, isTaskError, fetchTasks, createTask, deleteTask, updateTask, setNotification, dialog, setDialog } = useOutletContext<Context>();
 
     useEffect(() => {
         fetchTasks();
     }, []);
 
-    const handleOnManageTask = (task: Task | null) => {
+    const handleOnManageTask = (task: Task | undefined) => {
         setDialog({
             isOpen: true,
             title: (task && 'Edit Task') || 'Add New Task',
@@ -66,28 +69,26 @@ const ManageTask: FC<any> = () => {
                 const title = data.get("title")?.toString() || "";
                 const content = data.get("description")?.toString() || "";
 
-                await new Promise((resolve, _) => setTimeout(() => resolve(null), 1000));
-
-                const _task = tasks.find((t: Task) => t?.tid == task?.tid);
-                if (_task) {
-                    _task.title = title;
-                    _task.content = content;
-                    _task.updatedAt = new Date();
-                }
-
                 if (task) {
-                    const updatedList = tasks?.filter((t: Task) => t?.tid != task?.tid);
-                    setTasks([...updatedList, { ..._task }]);
+                    await updateTask(task?.tid as string, {
+                        title,
+                        content
+                    });
+
+                    if (isTaskError) {
+                        return setNotification({ type: 'danger', message: 'Task is not updated !!', isOpen: true });
+                    }
 
                     setNotification({ type: 'success', message: 'Updated the task sucessfully !!', isOpen: true });
                 } else {
-                    setTasks([...tasks, {
-                        tid: tasks?.length.toString(),
+                    await createTask({
                         title,
-                        content,
-                        createdAt: new Date(),
-                        updatedAt: new Date()
-                    }])
+                        content
+                    });
+
+                    if (isTaskError) {
+                        return setNotification({ type: 'danger', message: 'Task is not created !!', isOpen: true });
+                    }
 
                     setNotification({ type: 'success', message: 'Added the task sucessfully !!', isOpen: true });
                 }
@@ -97,13 +98,20 @@ const ManageTask: FC<any> = () => {
         });
     }
 
-    const handleOnDeleteTask = (taskId: string) => {
-        setTasks([...tasks?.filter(task => taskId != null && task?.tid != taskId.toString())]);
+    const handleOnDeleteTask = async (taskId: string) => {
+        await deleteTask(taskId);
+
+        if (isTaskError) {
+            return setNotification({ type: 'danger', message: 'Task is not deleted !!', isOpen: true });
+        }
+
+        setNotification({ type: 'success', message: 'Deleted the task sucessfully !!', isOpen: true });
     }
 
     return (
         <>
             <Header />
+            {/* Show Sub-Header */}
             <Box
                 className="heading-bar"
                 component="div"
@@ -133,7 +141,7 @@ const ManageTask: FC<any> = () => {
                     <Button
                         variant="contained"
                         sx={{ mx: 1 }}
-                        onClick={() => handleOnManageTask(null)}
+                        onClick={() => handleOnManageTask(undefined)}
                         startIcon={<AddIcon />}>
                         Add Task
                     </Button>
@@ -172,11 +180,11 @@ const ManageTask: FC<any> = () => {
                                 }
                                 action={
                                     <IconButton className="delete-icon">
-                                        <ClearIcon onClick={() => handleOnDeleteTask(task?.tid)} />
+                                        <ClearIcon onClick={() => handleOnDeleteTask(task?.tid as string)} />
                                     </IconButton>
                                 }
                                 title={task?.title}
-                                subheader={task?.createdAt.toLocaleString()}
+                                subheader={task?.createdAt?.toLocaleString()}
                             />
 
                             <br />
@@ -192,7 +200,7 @@ const ManageTask: FC<any> = () => {
                                 <br />
 
                                 <Typography variant="body2" color="text.secondary">
-                                    Updated On: {task?.updatedAt.toLocaleString()}
+                                    Updated On: {task?.updatedAt?.toLocaleString()}
                                 </Typography>
                             </CardContent>
                             <CardActions sx={{

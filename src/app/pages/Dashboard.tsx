@@ -3,16 +3,22 @@ import Header from "../components/Header";
 import { red } from "@mui/material/colors";
 import { useOutletContext } from "react-router";
 import type { Task } from "../models/Task.model";
-import { type Dispatch, type SetStateAction } from "react";
+import { useEffect, type Dispatch, type SetStateAction } from "react";
 
 type Context = {
     tasks: Task[],
+    fetchTasks: Function,
     setTasks: Dispatch<SetStateAction<Task[]>>,
     setNotification: Dispatch<SetStateAction<Notification>>
 };
 
 const Dashboard = () => {
-    const { tasks } = useOutletContext<Context>();
+    console.log('Dashboard mounted');
+    const { tasks, fetchTasks } = useOutletContext<Context>();
+
+    useEffect(() => {
+        fetchTasks();
+    }, []);
 
     return (
         <>

@@ -1,82 +1,98 @@
 import { useState } from 'react';
 import UserService from '../services/user.service';
 import localStorageService from '../services/local-storage.service';
+import type { User } from '../models/User.model';
+import { processUser } from '../pre-processing/user.preprocess';
 
 type hookReturn = {
+    user: User | null,
     isLoading: boolean,
     isError: boolean,
-    message: string | null,
+    // message: string | null,
     registerUser: (data: any) => Promise<any>,
     loginUser: (data: any) => Promise<any>,
     logoutUser: () => void
 };
 
 export const useAuthService = (): hookReturn => {
-    const [isError, setIsError] = useState(false);
+    const [user, setUser] = useState({} as User | null);
+    const [isError, setIsError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [message, setMessage] = useState<string | null>(null);
+    // const [message, setMessage] = useState<string | null>(null);
 
     const registerUser = async (data: any) => {
         try {
-            setIsLoading(true);
-            setMessage(null);
-            setIsError(false);
+            // setIsLoading(true);
+            // setMessage(null);
+            // setIsError(false);
 
-            const res = await UserService.register(data);
-            await new Promise<void>((resolve) => setTimeout(() => resolve(), 5000));
+            await UserService.register(data);
+            // await new Promise<void>((resolve) => setTimeout(() => resolve(), 5000));
 
-            console.log(res?.data)
-            return res?.data;
+            return false;
         } catch (err: any) {
-            setIsError(true);
-            setMessage(err?.response?.data?.message || 'Something went wrong!');
+            // setIsError(true);
+            // setMessage(err?.response?.data?.message || 'Something went wrong!');
+
+            return true;
         } finally {
-            setIsLoading(false);
+            // setIsLoading(false);
         }
     };
 
     const loginUser = async (data: any) => {
         try {
-            setIsLoading(true);
-            setMessage(null);
-            setIsError(false);
+            // setIsLoading(true);
+            // setMessage(null);
 
             const res = await UserService.login(data);
-            await new Promise<void>((resolve) => setTimeout(() => resolve(), 5000));
+            const preprocess = processUser(res?.data?.user);
 
             localStorageService.setItem("user", {
-                ...(res?.data)?.user,
+                ...preprocess,
                 token: res?.data?.token
-            })
+            });
 
-            console.log(res?.data)
-            return res?.data;
+            // await new Promise<void>((resolve) => setTimeout(() => resolve(), 5000));
+            setUser({ ...preprocess });
+
+            return false;
         } catch (err: any) {
-            setIsError(true);
-            setMessage(err?.response?.data?.message || 'Something went wrong!');
+            // setIsError(true);
+            // setMessage(err?.response?.data?.message || 'Something went wrong!');
+
+            return true;
         } finally {
-            setIsLoading(false);
+            // setIsLoading(false);
         }
     };
 
-    const logoutUser = () => {
+    const logoutUser = async () => {
         try {
-            setIsLoading(true);
-            setIsError(false);
+            // setIsLoading(true);
+            // setIsError(false);
 
             localStorageService.clearItems();
+
+            // await new Promise<void>((resolve) => setTimeout(() => resolve(), 5000));
+            // setUser(null);
+
+            return false;
         } catch (err: any) {
-            setIsError(true);
-            setMessage(err?.response?.data?.message || 'Something went wrong!');
+            // setIsError(true);
+            // setMessage(err?.response?.data?.message || 'Something went wrong!');
+
+            return true;
         } finally {
-            setIsLoading(false);
+            // setIsLoading(false);
         }
     };
 
     return {
+        user,
         isLoading,
         isError,
-        message,
+        // message,
         registerUser,
         loginUser,
         logoutUser

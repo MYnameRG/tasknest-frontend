@@ -1,3 +1,4 @@
+import { NavLink, useNavigate, useOutletContext } from 'react-router';
 import { useState, type MouseEvent } from 'react';
 import { Adb as AdbIcon } from "@mui/icons-material";
 import {
@@ -8,7 +9,6 @@ import {
     Typography, IconButton,
     Toolbar
 } from '@mui/material';
-import { NavLink } from 'react-router';
 
 const pages = [
     {
@@ -26,9 +26,32 @@ const pages = [
     }
 ];
 
-const settings = ['Profile', 'Account', 'Subscription', 'Logout'];
+const settings = [
+    {
+        id: 'profile',
+        value: 'Profile'
+    },
+    {
+        id: 'account',
+        value: 'Account'
+    },
+    {
+        id: 'subscription',
+        value: 'Subscription'
+    },
+    {
+        id: 'logout',
+        value: 'Logout'
+    }
+];
+
+type Context = {
+    logoutUser: Function
+};
 
 const Header = () => {
+    const navigate = useNavigate();
+    const { logoutUser } = useOutletContext<Context>();
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
     const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
@@ -38,6 +61,13 @@ const Header = () => {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
+
+    const handleLogout = async () => {
+        const isError = await logoutUser();
+        if (!isError) {
+            navigate("/en/authentication");
+        }
+    }
 
     return (
         <>
@@ -108,9 +138,16 @@ const Header = () => {
                                 onClose={handleCloseUserMenu}
                             >
                                 {
-                                    settings.map((setting) => (
-                                        <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                            <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                                    settings.map((setting, index) => (
+                                        <MenuItem key={index} onClick={handleCloseUserMenu}>
+                                            {
+                                                setting?.id == 'logout' &&
+                                                <Typography sx={{ textAlign: 'center' }} onClick={() => handleLogout()}>{setting?.value}</Typography>
+                                            }
+                                            {
+                                                setting?.id != 'logout' &&
+                                                <Typography sx={{ textAlign: 'center' }}>{setting?.value}</Typography>
+                                            }
                                         </MenuItem>
                                     ))
                                 }

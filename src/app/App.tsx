@@ -4,12 +4,14 @@ import Notification from './components/Notification';
 import { useState } from 'react';
 import type { NotificationModel } from './interfaces/Notification.model';
 import { Outlet } from 'react-router';
-import type { Task } from './models/Task.model';
 import Dialog from './components/Dialog';
 import type { DialogModel } from './interfaces/Dialog.model';
+import { useTaskService } from './hooks/useTaskService';
+import { useAuthService } from './hooks/useAuthService';
 
 const App = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const { user, logoutUser, isLoading: isUserLoading, isError: isUserError, registerUser, loginUser } = useAuthService();
+  const { tasks, fetchTasks, isError: isTaskError, createTask, deleteTask, updateTask } = useTaskService();
   const [notification, setNotification] = useState<NotificationModel>({} as NotificationModel);
   const [dialog, setDialog] = useState<DialogModel>({} as DialogModel);
 
@@ -18,7 +20,23 @@ const App = () => {
       <CssBaseline />
       <Dialog dialog={dialog} setDialog={setDialog} />
       <Notification notification={notification} setNotification={setNotification} />
-      <Outlet context={{ tasks: tasks, dialog: dialog, setTasks: setTasks, setNotification: setNotification, setDialog: setDialog }} />
+      <Outlet context={{
+        tasks,
+        user,
+        logoutUser,
+        registerUser,
+        loginUser,
+        isUserError,
+        isTaskError,
+        fetchTasks,
+        createTask, 
+        deleteTask, 
+        updateTask,
+        setNotification,
+        isUserLoading,
+        dialog,
+        setDialog
+      }} />
     </>
   )
 }

@@ -33,7 +33,7 @@ class TaskService {
    * Delete a task by ID
    */
   deleteTask(id: string) {
-    return this.api.delete(`${this.baseURL}/delete/${id}`);
+    return this.api.delete(`${this.baseURL}/remove/${id}`);
   }
 }
 

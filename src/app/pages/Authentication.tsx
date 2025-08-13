@@ -1,17 +1,20 @@
 import { Box, Button, Container, Link, TextField } from "@mui/material";
 import { useState, type Dispatch, type SetStateAction } from "react";
-import { useAuthService } from "../hooks/useAuthService";
 import { useNavigate, useOutletContext } from "react-router";
 import type { NotificationModel } from "../interfaces/Notification.model";
 
 type Context = {
+    registerUser: Function;
+    loginUser: Function;
+    isUserError: boolean;
+    isUserLoading: boolean;
     setNotification: Dispatch<SetStateAction<NotificationModel>>
 };
 
 const Authentication = () => {
     const navigate = useNavigate();
-    const { setNotification } = useOutletContext<Context>();
-    const { isLoading, isError, registerUser, loginUser } = useAuthService();
+
+    const { registerUser, loginUser, isUserLoading, setNotification } = useOutletContext<Context>();
     const [isLoggedIn, setLoggedIn] = useState<boolean | null>(false);
 
     const handleIsLoggedIn = (event: any) => {
@@ -25,25 +28,31 @@ const Authentication = () => {
         try {
             const formData = new FormData(event.currentTarget);
             if (isLoggedIn) {
-                await loginUser({
+                const isError = await loginUser({
                     email: formData.get('email') as string,
                     password: formData.get('password') as string
                 });
 
+                if (isError) {
+                    return setNotification({ type: 'error', message: 'Invalid Credentials !!', isOpen: true });
+                }
+
                 setNotification({ type: 'success', message: 'LoggedIn Sucessfully !!', isOpen: true });
             } else {
-                await registerUser({
+                const isError = await registerUser({
                     name: formData.get('name') as string,
                     email: formData.get('email') as string,
                     password: formData.get('password') as string
                 });
 
+                if (isError) {
+                    return setNotification({ type: 'error', message: 'Invalid Credentials !!', isOpen: true });
+                }
+
                 setNotification({ type: 'success', message: 'Registered Sucessfully !!', isOpen: true });
             }
 
-            if (!isError) {
-                navigate("/en/main/dashboard");
-            }
+            navigate("/en/main/dashboard");
         } catch (err) {
             console.log(err);
         }
@@ -115,7 +124,7 @@ const Authentication = () => {
                                     type="submit"
                                     variant="outlined"
                                     size="medium"
-                                    loading={isLoading}
+                                    loading={isUserLoading}
                                     loadingPosition="start">
                                     Register
                                 </Button>) ||
@@ -123,7 +132,7 @@ const Authentication = () => {
                                 type="submit"
                                 variant="outlined"
                                 size="medium"
-                                loading={isLoading}
+                                loading={isUserLoading}
                                 loadingPosition="start">
                                 SignIn
                             </Button>)

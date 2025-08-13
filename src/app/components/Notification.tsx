@@ -26,7 +26,7 @@ const Notification: FC<Props> = ({ notification, setNotification }) => {
                 onClose={handleClose}>
                 <Alert
                     onClose={handleClose}
-                    severity="success"
+                    severity={notification?.type}
                     variant="filled"
                     sx={{ width: '100%' }}
                 >

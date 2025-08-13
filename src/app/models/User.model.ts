@@ -6,6 +6,7 @@ export interface User {
   address?: string;
   role?: string;
   isVerified?: boolean;
+  token: any;
   updatedAt: Date;
   createdAt: Date;
 }
