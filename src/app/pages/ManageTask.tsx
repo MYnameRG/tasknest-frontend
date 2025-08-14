@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import type { Task } from "../models/Task.model";
 import { useOutletContext } from "react-router";
 import { Save as SaveIcon, AddRounded as AddIcon, UpdateRounded as UpdateIcon, CancelRounded as CancelIcon, Clear as ClearIcon } from '@mui/icons-material';
-import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, TextareaAutosize, TextField, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, IconButton, InputLabel, MenuItem, OutlinedInput, Select, TextareaAutosize, TextField, Typography } from "@mui/material";
 import type { NotificationModel } from "../interfaces/Notification.model";
 import type { DialogModel } from "../interfaces/Dialog.model";
 import { red } from "@mui/material/colors";
@@ -21,7 +21,6 @@ type Context = {
 };
 
 const ManageTask: FC<any> = () => {
-    console.log('ManageTask mounted');
     const { tasks, isTaskError, fetchTasks, createTask, deleteTask, updateTask, setNotification, dialog, setDialog } = useOutletContext<Context>();
 
     useEffect(() => {
@@ -56,13 +55,33 @@ const ManageTask: FC<any> = () => {
                     <br />
                     <TextareaAutosize
                         name="description"
-                        minRows={3}
-                        placeholder="Description"
+                        minRows={2}
+                        placeholder="Add Description"
                         id="description"
                         defaultValue={task && task?.content}
                         style={{ width: '100%', height: 100, padding: 10 }}
                         inputMode="text"
                     />
+
+                    <br />
+                    <br />
+                    <FormControl>
+                        <InputLabel id="category">Age</InputLabel>
+                        <Select
+                            labelId="category"
+                            id="category"
+                            input={<OutlinedInput label="Category" />}
+                            style={{
+                                width: '100%',
+                                margin: 0
+                            }}
+                        >
+                            <MenuItem value={""}>None</MenuItem>
+                            <MenuItem value={10}>Ten</MenuItem>
+                            <MenuItem value={20}>Twenty</MenuItem>
+                            <MenuItem value={30}>Thirty</MenuItem>
+                        </Select>
+                    </FormControl>
                 </>
             ),
             handleSubmit: async (data: FormData) => {

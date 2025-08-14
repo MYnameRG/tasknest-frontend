@@ -13,7 +13,6 @@ type Context = {
 };
 
 const Dashboard = () => {
-    console.log('Dashboard mounted');
     const { tasks, fetchTasks } = useOutletContext<Context>();
 
     useEffect(() => {
