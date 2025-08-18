@@ -6,8 +6,10 @@ import type { Task } from "../models/Task.model";
 import { useEffect, type Dispatch, type SetStateAction } from "react";
 
 type Context = {
+    useAIMode: boolean,
     tasks: Task[],
     fetchTasks: Function,
+    setUseAIMode: Dispatch<SetStateAction<boolean>>,
     setTasks: Dispatch<SetStateAction<Task[]>>,
     setNotification: Dispatch<SetStateAction<Notification>>
 };

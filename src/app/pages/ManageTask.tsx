@@ -10,9 +10,13 @@ import {
     Clear as ClearIcon,
     Category as CategoryIcon,
     PriorityHigh as PriorityHighIcon,
-    DateRange as DateRangeIcon
+    DateRange as DateRangeIcon,
+    CategoryOutlined as CategoryOutlinedIcon,
+    EventAvailableOutlined as EventAvailableOutlinedIcon,
+    AddTaskOutlined as AddTaskOutlinedIcon
 } from '@mui/icons-material';
-import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, Chip, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, Stack, TextareaAutosize, TextField, Typography } from "@mui/material";
+import styles from "./css/ManageTask.module.css";
+import { Avatar, Box, Button, ButtonGroup, Card, CardActions, CardContent, CardHeader, Chip, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, Stack, TextareaAutosize, TextField, Typography } from "@mui/material";
 import type { NotificationModel } from "../interfaces/Notification.model";
 import type { DialogModel } from "../interfaces/Dialog.model";
 import { red } from "@mui/material/colors";
@@ -25,13 +29,18 @@ type Context = {
     createTask: Function,
     deleteTask: Function,
     updateTask: Function,
+    setUseAIMode: Dispatch<SetStateAction<boolean>>,
+    useAIMode: boolean,
     setNotification: Dispatch<SetStateAction<NotificationModel>>,
     dialog: DialogModel,
     setDialog: Dispatch<SetStateAction<DialogModel>>
 };
 
 const ManageTask: FC<any> = () => {
-    const { tasks, isTaskError, fetchTasks, createTask, deleteTask, updateTask, setNotification, dialog, setDialog } = useOutletContext<Context>();
+    const { tasks, isTaskError,
+        fetchTasks, createTask, deleteTask,
+        updateTask, setNotification,
+        dialog, setDialog, useAIMode, setUseAIMode } = useOutletContext<Context>();
 
     useEffect(() => {
         fetchTasks();
@@ -183,7 +192,8 @@ const ManageTask: FC<any> = () => {
 
     return (
         <>
-            <Header />
+            <Header useAIMode={useAIMode} setUseAIMode={setUseAIMode} />
+
             {/* Show Sub-Header */}
             <Box
                 className="heading-bar"
@@ -211,13 +221,47 @@ const ManageTask: FC<any> = () => {
                         width: '50%'
                     }}
                 >
-                    <Button
-                        variant="contained"
-                        sx={{ mx: 1 }}
-                        onClick={() => handleOnManageTask(undefined)}
-                        startIcon={<AddIcon />}>
-                        Add Task
-                    </Button>
+                    {
+                        useAIMode && <ButtonGroup
+                            sx={{ padding: 0 }}
+                            size="small"
+                            disableElevation
+                            classes={'ai-mode'}
+                            className={styles.glowingBorder}>
+                            <Button
+                                variant="contained"
+                                onClick={() => handleOnManageTask(undefined)}
+                                startIcon={<AddTaskOutlinedIcon />}>
+                                Prompt-Based Task Creation
+                            </Button>
+
+                            <Button
+                                variant="contained"
+                                onClick={() => handleOnManageTask(undefined)}
+                                startIcon={<EventAvailableOutlinedIcon />}>
+                                Smart Deadline Suggestions
+                            </Button>
+
+                            <Button
+                                variant="contained"
+                                onClick={() => handleOnManageTask(undefined)}
+                                startIcon={<CategoryOutlinedIcon />}>
+                                Auto Categorization
+                            </Button>
+                        </ButtonGroup>
+                    }
+
+                    <ButtonGroup
+                        size="small"
+                        className="normal-mode">
+                        <Button
+                            variant="contained"
+                            sx={{ mx: 1 }}
+                            onClick={() => handleOnManageTask(undefined)}
+                            startIcon={<AddIcon />}>
+                            Add Task
+                        </Button>
+                    </ButtonGroup>
                 </Box>
             </Box>
 

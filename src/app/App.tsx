@@ -14,6 +14,7 @@ const App = () => {
   const { tasks, fetchTasks, isError: isTaskError, createTask, deleteTask, updateTask } = useTaskService();
   const [notification, setNotification] = useState<NotificationModel>({} as NotificationModel);
   const [dialog, setDialog] = useState<DialogModel>({} as DialogModel);
+  const [useAIMode, setUseAIMode] = useState(false);
 
   return (
     <>
@@ -21,6 +22,8 @@ const App = () => {
       <Dialog dialog={dialog} setDialog={setDialog} />
       <Notification notification={notification} setNotification={setNotification} />
       <Outlet context={{
+        useAIMode,
+        setUseAIMode,
         tasks,
         user,
         logoutUser,
