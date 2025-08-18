@@ -4,7 +4,7 @@ export interface Task {
   content?: string;
   category: string;
   priority: number;
-  deadline?: Date;
+  deadline?: String;
   status: string;
   isArchieve?: boolean;
   updatedAt: Date;

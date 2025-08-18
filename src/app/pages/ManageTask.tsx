@@ -2,11 +2,21 @@ import { useEffect, type Dispatch, type FC, type SetStateAction } from "react";
 import Header from "../components/Header";
 import type { Task } from "../models/Task.model";
 import { useOutletContext } from "react-router";
-import { Save as SaveIcon, AddRounded as AddIcon, UpdateRounded as UpdateIcon, CancelRounded as CancelIcon, Clear as ClearIcon } from '@mui/icons-material';
-import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, IconButton, InputLabel, MenuItem, OutlinedInput, Select, TextareaAutosize, TextField, Typography } from "@mui/material";
+import {
+    Save as SaveIcon,
+    AddRounded as AddIcon,
+    UpdateRounded as UpdateIcon,
+    CancelRounded as CancelIcon,
+    Clear as ClearIcon,
+    Category as CategoryIcon,
+    PriorityHigh as PriorityHighIcon,
+    DateRange as DateRangeIcon
+} from '@mui/icons-material';
+import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, Chip, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, Stack, TextareaAutosize, TextField, Typography } from "@mui/material";
 import type { NotificationModel } from "../interfaces/Notification.model";
 import type { DialogModel } from "../interfaces/Dialog.model";
 import { red } from "@mui/material/colors";
+import { Category, Priority } from "../shared/enums/task.enum";
 
 type Context = {
     tasks: Task[],
@@ -65,33 +75,74 @@ const ManageTask: FC<any> = () => {
 
                     <br />
                     <br />
-                    <FormControl>
-                        <InputLabel id="category">Age</InputLabel>
+                    <FormControl
+                        sx={{ m: 0, width: '100%' }}>
+                        <InputLabel id="category">Category</InputLabel>
                         <Select
                             labelId="category"
                             id="category"
+                            name="category"
+                            defaultValue={task && task?.category}
                             input={<OutlinedInput label="Category" />}
-                            style={{
-                                width: '100%',
-                                margin: 0
-                            }}
                         >
-                            <MenuItem value={""}>None</MenuItem>
-                            <MenuItem value={10}>Ten</MenuItem>
-                            <MenuItem value={20}>Twenty</MenuItem>
-                            <MenuItem value={30}>Thirty</MenuItem>
+                            {
+                                Category?.map(tag => (
+                                    <MenuItem key={tag?.id} value={tag?.value}>{tag?.id}</MenuItem>
+                                ))
+                            }
                         </Select>
+                    </FormControl>
+
+                    <br />
+                    <br />
+                    <FormControl style={{
+                        width: '100%',
+                        margin: 0
+                    }}>
+                        <InputLabel id="priority">Priority</InputLabel>
+                        <Select
+                            labelId="priority"
+                            id="priority"
+                            name="priority"
+                            defaultValue={task && task?.priority}
+                            input={<OutlinedInput label="Priority" />}
+                        >
+                            {
+                                Priority?.map(priority => (
+                                    <MenuItem key={priority?.id} value={priority?.value}>{priority?.id}</MenuItem>
+                                ))
+                            }
+                        </Select>
+                    </FormControl>
+
+                    <br />
+                    <br />
+                    <FormControl sx={{ m: 0, width: '100%' }} variant="outlined">
+                        <OutlinedInput
+                            id="deadline"
+                            name="deadline"
+                            endAdornment={<InputAdornment position="end">{'Deadline'}</InputAdornment>}
+                            defaultValue={task && task?.deadline}
+                            label="Deadline"
+                            type="date"
+                        />
                     </FormControl>
                 </>
             ),
             handleSubmit: async (data: FormData) => {
                 const title = data.get("title")?.toString() || "";
                 const content = data.get("description")?.toString() || "";
+                const category = data.get("category")?.toString() || "";
+                const priority = Number(data.get("priority")?.toString());
+                const deadline = data.get("deadline")?.valueOf() || null;
 
                 if (task) {
                     await updateTask(task?.tid as string, {
                         title,
-                        content
+                        content,
+                        category,
+                        priority,
+                        deadline
                     });
 
                     if (isTaskError) {
@@ -102,7 +153,10 @@ const ManageTask: FC<any> = () => {
                 } else {
                     await createTask({
                         title,
-                        content
+                        content,
+                        category,
+                        priority,
+                        deadline
                     });
 
                     if (isTaskError) {
@@ -185,7 +239,7 @@ const ManageTask: FC<any> = () => {
                             variant="outlined"
                             sx={{
                                 display: 'inline-block',
-                                padding: '20px',
+                                padding: '10px',
                                 marginRight: '8px',
                                 width: 240,
                                 maxWidth: 300
@@ -205,19 +259,23 @@ const ManageTask: FC<any> = () => {
                                 title={task?.title}
                                 subheader={task?.createdAt?.toLocaleString()}
                             />
-
                             <br />
                             <CardContent
                                 style={{
                                     padding: 0,
                                     textAlign: "left"
                                 }}>
+                                <Stack direction="row" sx={{ marginBottom: 1 }} spacing={1}>
+                                    {(task?.category && <Chip icon={<CategoryIcon />} size="small" label={Category?.find(category => category?.value == task?.category)?.id} color="primary" variant="outlined" />)}
+                                    {(task?.priority > -1 && <Chip icon={<PriorityHighIcon />} size="small" label={Priority?.find(priority => priority?.value == task?.priority)?.id} color="success" variant="outlined" />)}
+                                </Stack>
+                                <Stack sx={{ marginBottom: 1 }} direction="row" spacing={1}>
+                                    {(task?.deadline && <Chip icon={<DateRangeIcon />} size="small" label={task?.deadline?.toString()} color="error" variant="outlined" />)}
+                                </Stack>
                                 <Typography variant="body2" color="text.secondary">
                                     {task?.content}
                                 </Typography>
-
                                 <br />
-
                                 <Typography variant="body2" color="text.secondary">
                                     Updated On: {task?.updatedAt?.toLocaleString()}
                                 </Typography>
