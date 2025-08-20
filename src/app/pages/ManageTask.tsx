@@ -29,6 +29,7 @@ type Context = {
     createTask: Function,
     deleteTask: Function,
     updateTask: Function,
+    autoCategorizeTasks: Function,
     setUseAIMode: Dispatch<SetStateAction<boolean>>,
     useAIMode: boolean,
     setNotification: Dispatch<SetStateAction<NotificationModel>>,
@@ -39,8 +40,10 @@ type Context = {
 const ManageTask: FC<any> = () => {
     const { tasks, isTaskError,
         fetchTasks, createTask, deleteTask,
+        autoCategorizeTasks,
         updateTask, setNotification,
-        dialog, setDialog, useAIMode, setUseAIMode } = useOutletContext<Context>();
+        dialog, setDialog, 
+        useAIMode, setUseAIMode } = useOutletContext<Context>();
 
     useEffect(() => {
         fetchTasks();
@@ -190,6 +193,16 @@ const ManageTask: FC<any> = () => {
         setNotification({ type: 'success', message: 'Deleted the task sucessfully !!', isOpen: true });
     }
 
+    const handleOnAutoCategorizeTask = async () => {
+        await autoCategorizeTasks();
+
+        if (isTaskError) {
+            return setNotification({ type: 'danger', message: 'Task is not categorized !!', isOpen: true });
+        }
+
+        setNotification({ type: 'success', message: 'Categorized the task sucessfully !!', isOpen: true });
+    }
+
     return (
         <>
             <Header useAIMode={useAIMode} setUseAIMode={setUseAIMode} />
@@ -244,7 +257,7 @@ const ManageTask: FC<any> = () => {
 
                             <Button
                                 variant="contained"
-                                onClick={() => handleOnManageTask(undefined)}
+                                onClick={() => handleOnAutoCategorizeTask()}
                                 startIcon={<CategoryOutlinedIcon />}>
                                 Auto Categorization
                             </Button>

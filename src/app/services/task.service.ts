@@ -35,6 +35,13 @@ class TaskService {
   deleteTask(id: string) {
     return this.api.delete(`${this.baseURL}/remove/${id}`);
   }
+
+  /**
+   * Auto-Categorization of all tasks
+   */
+  categarizationTasks() {
+    return this.api.get(`${this.baseURL}/auto-categorize`);
+  }
 }
 
 export default new TaskService();

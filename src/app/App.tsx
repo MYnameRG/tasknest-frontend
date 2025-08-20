@@ -11,7 +11,7 @@ import { useAuthService } from './hooks/useAuthService';
 
 const App = () => {
   const { user, logoutUser, isLoading: isUserLoading, isError: isUserError, registerUser, loginUser } = useAuthService();
-  const { tasks, fetchTasks, isError: isTaskError, createTask, deleteTask, updateTask } = useTaskService();
+  const { tasks, fetchTasks, isError: isTaskError, createTask, deleteTask, updateTask, autoCategorizeTasks } = useTaskService();
   const [notification, setNotification] = useState<NotificationModel>({} as NotificationModel);
   const [dialog, setDialog] = useState<DialogModel>({} as DialogModel);
   const [useAIMode, setUseAIMode] = useState(false);
@@ -35,6 +35,7 @@ const App = () => {
         createTask, 
         deleteTask, 
         updateTask,
+        autoCategorizeTasks,
         setNotification,
         isUserLoading,
         dialog,

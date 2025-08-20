@@ -89,6 +89,23 @@ export const useTaskService = () => {
         }
     };
 
+    const autoCategorizeTasks = async () => {
+        setIsLoading(true);
+        setMessage(null);
+        setIsError(false);
+
+        try {
+            const res = await TaskService.categarizationTasks();
+            const preprocess = processMultipleTask(res.data.tasks);
+            setTasks([...preprocess]);
+        } catch (err: any) {
+            setIsError(true);
+            setMessage(err?.response?.data?.message || 'Error categorization tasks');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return {
         tasks,
         isError,
@@ -97,6 +114,7 @@ export const useTaskService = () => {
         fetchTasks,
         createTask,
         updateTask,
-        deleteTask
+        deleteTask,
+        autoCategorizeTasks
     };
 }
