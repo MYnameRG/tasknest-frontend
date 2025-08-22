@@ -2,6 +2,9 @@ import { Box, Button, Container, Link, TextField } from "@mui/material";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { useNavigate, useOutletContext } from "react-router";
 import type { NotificationModel } from "../interfaces/Notification.model";
+import { useDispatch, useSelector } from "react-redux";
+import { LOGIN_USER, REGISTER_USER } from "../redux/slices/user.slice";
+import type { AppDispatch } from "../redux/store";
 
 type Context = {
     registerUser: Function;
@@ -13,8 +16,11 @@ type Context = {
 
 const Authentication = () => {
     const navigate = useNavigate();
+    const dispatchAction = useDispatch<AppDispatch>();
 
-    const { registerUser, loginUser, isUserLoading, setNotification } = useOutletContext<Context>();
+    const { setNotification } = useOutletContext<Context>();
+    const { isPending } = useSelector((state: any) => state?.user);
+
     const [isLoggedIn, setLoggedIn] = useState<boolean | null>(false);
 
     const handleIsLoggedIn = (event: any) => {
@@ -24,37 +30,28 @@ const Authentication = () => {
 
     const handleOnSumit = async (event: any) => {
         event.preventDefault();
+        let response = null;
 
         try {
             const formData = new FormData(event.currentTarget);
             if (isLoggedIn) {
-                const isError = await loginUser({
+                response = await dispatchAction(LOGIN_USER({
                     email: formData.get('email') as string,
                     password: formData.get('password') as string
-                });
-
-                if (isError) {
-                    return setNotification({ type: 'error', message: 'Invalid Credentials !!', isOpen: true });
-                }
-
-                setNotification({ type: 'success', message: 'LoggedIn Sucessfully !!', isOpen: true });
+                })).unwrap();
+                console.log("Response: ", response);
             } else {
-                const isError = await registerUser({
+                response = await dispatchAction(REGISTER_USER({
                     name: formData.get('name') as string,
                     email: formData.get('email') as string,
                     password: formData.get('password') as string
-                });
-
-                if (isError) {
-                    return setNotification({ type: 'error', message: 'Invalid Credentials !!', isOpen: true });
-                }
-
-                setNotification({ type: 'success', message: 'Registered Sucessfully !!', isOpen: true });
+                })).unwrap();
             }
 
             navigate("/en/main/dashboard");
-        } catch (err) {
-            console.log(err);
+            return setNotification({ type: 'success', message: response?.message, isOpen: true });
+        } catch (error: any) {
+            return setNotification({ type: 'error', message: error?.message, isOpen: true });
         }
     }
 
@@ -124,7 +121,7 @@ const Authentication = () => {
                                     type="submit"
                                     variant="outlined"
                                     size="medium"
-                                    loading={isUserLoading}
+                                    loading={isPending}
                                     loadingPosition="start">
                                     Register
                                 </Button>) ||
@@ -132,7 +129,7 @@ const Authentication = () => {
                                 type="submit"
                                 variant="outlined"
                                 size="medium"
-                                loading={isUserLoading}
+                                loading={isPending}
                                 loadingPosition="start">
                                 SignIn
                             </Button>)
