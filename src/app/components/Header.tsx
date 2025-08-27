@@ -1,5 +1,5 @@
 import { NavLink, useNavigate, useOutletContext } from 'react-router';
-import { useState, type FC, type MouseEvent } from 'react';
+import { useState, type Dispatch, type FC, type MouseEvent, type SetStateAction } from 'react';
 import styles from "./css/Header.module.css";
 import { Adb as AdbIcon } from "@mui/icons-material";
 import {
@@ -11,6 +11,10 @@ import {
     Toolbar,
     Switch
 } from '@mui/material';
+import type { AppDispatch } from '../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { LOGOUT_USER } from '../redux/slices/user.slice';
+import type { NotificationModel } from '../interfaces/Notification.model';
 
 const pages = [
     {
@@ -48,12 +52,15 @@ const settings = [
 ];
 
 type Context = {
-    logoutUser: Function
+    setNotification: Dispatch<SetStateAction<NotificationModel>>
 };
 
 const Header: FC<any> = ({ useAIMode, setUseAIMode }) => {
     const navigate = useNavigate();
-    const { logoutUser } = useOutletContext<Context>();
+    const dispatchAction = useDispatch<AppDispatch>();
+
+    const { setNotification } = useOutletContext<Context>();
+    const { currentUser } = useSelector((state: any) => state?.user);
 
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -66,9 +73,12 @@ const Header: FC<any> = ({ useAIMode, setUseAIMode }) => {
     };
 
     const handleLogout = async () => {
-        const isError = await logoutUser();
-        if (!isError) {
+        try {
+            dispatchAction(LOGOUT_USER(null));
             navigate("/en/authentication");
+        }
+        catch (error) {
+            return setNotification({ type: 'error', message: "Something went wrong", isOpen: true });
         }
     }
 
@@ -143,7 +153,7 @@ const Header: FC<any> = ({ useAIMode, setUseAIMode }) => {
                             <Box sx={{ flexGrow: 0 }}>
                                 <Tooltip title="Open settings">
                                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                        <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                        <Avatar alt={currentUser?.name} src="/static/images/avatar/2.jpg" />
                                     </IconButton>
                                 </Tooltip>
 

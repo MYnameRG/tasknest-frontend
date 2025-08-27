@@ -1,4 +1,4 @@
-import { useEffect, type Dispatch, type FC, type SetStateAction } from "react";
+import { useEffect, type Dispatch, type FC, type Key, type SetStateAction } from "react";
 import Header from "../components/Header";
 import type { Task } from "../models/Task.model";
 import { useOutletContext } from "react-router";
@@ -21,6 +21,9 @@ import type { NotificationModel } from "../interfaces/Notification.model";
 import type { DialogModel } from "../interfaces/Dialog.model";
 import { red } from "@mui/material/colors";
 import { Category, Priority } from "../shared/enums/task.enum";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch } from "../redux/store";
+import { AUTO_CATEGORIZATION_TASKS, CREATE_TASK, DELETE_TASK, FETCH_TASKS, UPDATE_TASK } from "../redux/slices/task.slice";
 
 type Context = {
     tasks: Task[],
@@ -38,15 +41,22 @@ type Context = {
 };
 
 const ManageTask: FC<any> = () => {
-    const { tasks, isTaskError,
-        fetchTasks, createTask, deleteTask,
-        autoCategorizeTasks,
-        updateTask, setNotification,
-        dialog, setDialog, 
+    const dispatchAction = useDispatch<AppDispatch>();
+    const { tasks } = useSelector((state: any) => state?.tasks);
+
+    const { setNotification,
+        dialog, setDialog,
         useAIMode, setUseAIMode } = useOutletContext<Context>();
 
     useEffect(() => {
-        fetchTasks();
+        (async () => {
+            try {
+                await dispatchAction(FETCH_TASKS()).unwrap();
+            }
+            catch (error: any) {
+                return setNotification({ type: 'error', message: error?.message, isOpen: true });
+            }
+        })();
     }, []);
 
     const handleOnManageTask = (task: Task | undefined) => {
@@ -148,59 +158,61 @@ const ManageTask: FC<any> = () => {
                 const priority = Number(data.get("priority")?.toString());
                 const deadline = data.get("deadline")?.valueOf() || null;
 
-                if (task) {
-                    await updateTask(task?.tid as string, {
-                        title,
-                        content,
-                        category,
-                        priority,
-                        deadline
-                    });
-
-                    if (isTaskError) {
-                        return setNotification({ type: 'danger', message: 'Task is not updated !!', isOpen: true });
+                try {
+                    let response = null;
+                    if (task) {
+                        response = await dispatchAction(UPDATE_TASK({
+                            id: task?.tid as string,
+                            data: {
+                                title,
+                                content,
+                                category,
+                                priority,
+                                deadline
+                            }
+                        })).unwrap();
+                    } else {
+                        response = await dispatchAction(CREATE_TASK({
+                            title,
+                            content,
+                            category,
+                            priority,
+                            deadline
+                        })).unwrap();
                     }
 
-                    setNotification({ type: 'success', message: 'Updated the task sucessfully !!', isOpen: true });
-                } else {
-                    await createTask({
-                        title,
-                        content,
-                        category,
-                        priority,
-                        deadline
-                    });
-
-                    if (isTaskError) {
-                        return setNotification({ type: 'danger', message: 'Task is not created !!', isOpen: true });
-                    }
-
-                    setNotification({ type: 'success', message: 'Added the task sucessfully !!', isOpen: true });
+                    setNotification({ type: 'success', message: response?.message, isOpen: true });
+                    setDialog({ ...dialog, isOpen: false });
                 }
-
-                setDialog({ ...dialog, isOpen: false });
+                catch (error: any) {
+                    return setNotification({ type: 'danger', message: error?.message, isOpen: true });
+                }
             },
         });
     }
 
     const handleOnDeleteTask = async (taskId: string) => {
-        await deleteTask(taskId);
+        try {
+            const response = await dispatchAction(DELETE_TASK({
+                id: taskId
+            })).unwrap();
 
-        if (isTaskError) {
-            return setNotification({ type: 'danger', message: 'Task is not deleted !!', isOpen: true });
+            return setNotification({ type: 'success', message: response?.message, isOpen: true });
         }
-
-        setNotification({ type: 'success', message: 'Deleted the task sucessfully !!', isOpen: true });
+        catch (error: any) {
+            return setNotification({ type: 'danger', message: error?.message, isOpen: true });
+        }
     }
 
     const handleOnAutoCategorizeTask = async () => {
-        await autoCategorizeTasks();
+        try {
+            const response = await dispatchAction(AUTO_CATEGORIZATION_TASKS()).unwrap();
 
-        if (isTaskError) {
-            return setNotification({ type: 'danger', message: 'Task is not categorized !!', isOpen: true });
+            return setNotification({ type: 'success', message: response?.message, isOpen: true });
         }
-
-        setNotification({ type: 'success', message: 'Categorized the task sucessfully !!', isOpen: true });
+        catch (error: any) {
+            return setNotification({ type: 'danger', message: error?.message, isOpen: true });
+        }
     }
 
     return (
@@ -290,7 +302,7 @@ const ManageTask: FC<any> = () => {
                 }}
             >
                 {
-                    tasks.map((task, index) => (
+                    tasks.map((task: Task, index: Key) => (
                         <Card
                             key={index}
                             variant="outlined"

@@ -5,20 +5,35 @@ import Dashboard from "../pages/Dashboard";
 import ManageTask from "../pages/ManageTask";
 import Pricing from "../pages/Pricing";
 import Blog from "../pages/Blog";
+import AuthGuard from "../guards/AuthGuard";
 
 const AppRoutes = () => {
-    console.log('AppRoutes mounted');
-    
     return (
         <>
             <Routes>
                 <Route path="en" element={<App />}>
                     <Route path="authentication" element={<Authentication />} />
                     <Route path="main">
-                        <Route index path="dashboard" element={<Dashboard />} />
-                        <Route path="manage-task" element={<ManageTask />} />
-                        <Route path="pricing" element={<Pricing />} />
-                        <Route path="blog" element={<Blog />} />
+                        <Route index path="dashboard" element={
+                            <AuthGuard>
+                                <Dashboard />
+                            </AuthGuard>
+                        } />
+                        <Route path="manage-task" element={
+                            <AuthGuard>
+                                <ManageTask />
+                            </AuthGuard>
+                        } />
+                        <Route path="pricing" element={
+                            <AuthGuard>
+                                <Pricing />
+                            </AuthGuard>
+                        } />
+                        <Route path="blog" element={
+                            <AuthGuard>
+                                <Blog />
+                            </AuthGuard>
+                        } />
                     </Route>
                 </Route>
                 <Route path="*" element={<Navigate to="/en/authentication" />} />

@@ -1,6 +1,7 @@
 import type { Task } from "../models/Task.model";
 
 export const processSingleTask = (task: any) => {
+    if (!task) return task;
     return {
         tid: task?._id,
         title: task?.title,
@@ -16,6 +17,7 @@ export const processSingleTask = (task: any) => {
 };
 
 export const processMultipleTask = (tasks: any[]) => {
+    if (!tasks || tasks?.length == 0) return tasks;
     return tasks.map((t: any) => ({
         tid: t?._id,
         title: t?.title,

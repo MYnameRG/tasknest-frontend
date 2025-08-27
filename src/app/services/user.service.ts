@@ -1,5 +1,5 @@
 import APIService from '../apis/index';
-import localStorageService from './local-storage.service';
+import { localStorageService } from './index';
 import type { APIProvider } from '../apis/types/types';
 import type { User } from '../models/User.model';
 import type { localStorage } from '../interfaces/LocalStorage.model';
@@ -9,7 +9,7 @@ class UserService {
     private localStorageService = localStorageService as localStorage;
     private baseURL = "/auth";
 
-    constructor() {}
+    constructor() { }
 
     /**
      * Register a new user
@@ -29,7 +29,15 @@ class UserService {
      * Logout user
      */
     logout() {
-        this.localStorageService?.clearItems();
+        return new Promise((resolve, reject) => {
+            try {
+                this.localStorageService?.clearItems();
+                return resolve({ data: { message: "Logout Successfully!" } });
+            }
+            catch (error) {
+                reject({ err: { response: { data: { message: (error as any)?.message } } }});
+            }
+        });
     }
 }
 

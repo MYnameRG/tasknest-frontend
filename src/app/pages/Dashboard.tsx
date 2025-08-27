@@ -3,7 +3,11 @@ import Header from "../components/Header";
 import { red } from "@mui/material/colors";
 import { useOutletContext } from "react-router";
 import type { Task } from "../models/Task.model";
-import { useEffect, type Dispatch, type SetStateAction } from "react";
+import { useEffect, type Dispatch, type Key, type SetStateAction } from "react";
+import type { AppDispatch } from "../redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { FETCH_TASKS } from "../redux/slices/task.slice";
+import type { NotificationModel } from "../interfaces/Notification.model";
 
 type Context = {
     useAIMode: boolean,
@@ -11,14 +15,24 @@ type Context = {
     fetchTasks: Function,
     setUseAIMode: Dispatch<SetStateAction<boolean>>,
     setTasks: Dispatch<SetStateAction<Task[]>>,
-    setNotification: Dispatch<SetStateAction<Notification>>
+    setNotification: Dispatch<SetStateAction<NotificationModel>>
 };
 
 const Dashboard = () => {
-    const { tasks, fetchTasks } = useOutletContext<Context>();
+    const { setNotification } = useOutletContext<Context>();
+
+    const dispatchAction = useDispatch<AppDispatch>();
+    const { tasks } = useSelector((state: any) => state?.tasks);
 
     useEffect(() => {
-        fetchTasks();
+        (async () => {
+            try {
+                await dispatchAction(FETCH_TASKS()).unwrap();
+            }
+            catch (error: any) {
+                return setNotification({ type: 'error', message: error?.message, isOpen: true });
+            }
+        })();
     }, []);
 
     return (
@@ -44,9 +58,9 @@ const Dashboard = () => {
                     }}
                 >
                     {
-                        tasks.map((task) => (
+                        tasks.map((task: Task, index: Key) => (
                             <Card
-                                key={task?.tid}
+                                key={index}
                                 variant="outlined"
                                 sx={{
                                     display: 'inline-block',
@@ -62,7 +76,7 @@ const Dashboard = () => {
                                         </Avatar>
                                     }
                                     title={task?.title}
-                                    subheader={task?.createdAt.toLocaleString()}
+                                    subheader={task?.createdAt?.toLocaleString()}
                                 />
 
                                 <br />
@@ -75,7 +89,7 @@ const Dashboard = () => {
                                     <br />
 
                                     <Typography variant="body2" color="text.secondary">
-                                        Updated On: {task?.updatedAt.toLocaleString()}
+                                        Updated On: {task?.updatedAt?.toLocaleString()}
                                     </Typography>
                                 </CardContent>
                             </Card>

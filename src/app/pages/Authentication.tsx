@@ -39,7 +39,8 @@ const Authentication = () => {
                     email: formData.get('email') as string,
                     password: formData.get('password') as string
                 })).unwrap();
-                console.log("Response: ", response);
+
+                navigate("/en/main/dashboard");
             } else {
                 response = await dispatchAction(REGISTER_USER({
                     name: formData.get('name') as string,
@@ -48,7 +49,6 @@ const Authentication = () => {
                 })).unwrap();
             }
 
-            navigate("/en/main/dashboard");
             return setNotification({ type: 'success', message: response?.message, isOpen: true });
         } catch (error: any) {
             return setNotification({ type: 'error', message: error?.message, isOpen: true });
