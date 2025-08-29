@@ -24,6 +24,7 @@ import { Category, Priority } from "../shared/enums/task.enum";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "../redux/store";
 import { AUTO_CATEGORIZATION_TASKS, CREATE_TASK, DELETE_TASK, FETCH_TASKS, UPDATE_TASK } from "../redux/slices/task.slice";
+import { DateTime } from "luxon";
 
 type Context = {
     tasks: Task[],
@@ -326,7 +327,7 @@ const ManageTask: FC<any> = () => {
                                     </IconButton>
                                 }
                                 title={task?.title}
-                                subheader={task?.createdAt?.toLocaleString()}
+                                subheader={DateTime.fromISO(task?.createdAt?.toString() as string).toFormat('DDD')}
                             />
                             <br />
                             <CardContent
@@ -339,14 +340,14 @@ const ManageTask: FC<any> = () => {
                                     {(task?.priority > -1 && <Chip icon={<PriorityHighIcon />} size="small" label={Priority?.find(priority => priority?.value == task?.priority)?.id} color="success" variant="outlined" />)}
                                 </Stack>
                                 <Stack sx={{ marginBottom: 1 }} direction="row" spacing={1}>
-                                    {(task?.deadline && <Chip icon={<DateRangeIcon />} size="small" label={task?.deadline?.toString()} color="error" variant="outlined" />)}
+                                    {(task?.deadline && <Chip icon={<DateRangeIcon />} size="small" label={DateTime.fromISO(task?.deadline?.toString() as string).toFormat('DDD')} color="error" variant="outlined" />)}
                                 </Stack>
                                 <Typography variant="body2" color="text.secondary">
                                     {task?.content}
                                 </Typography>
                                 <br />
                                 <Typography variant="body2" color="text.secondary">
-                                    Updated On: {task?.updatedAt?.toLocaleString()}
+                                    Updated On: {DateTime.fromISO(task?.updatedAt?.toString() as string).toFormat('DDD')}
                                 </Typography>
                             </CardContent>
                             <CardActions sx={{

@@ -1,12 +1,14 @@
+import { DateTime } from "luxon";
+
 export interface Task {
   tid?: string;
   title: string;
   content?: string;
   category: string;
   priority: number;
-  deadline?: any;
+  deadline?: DateTime;
   status?: string;
   isArchieve?: boolean;
-  updatedAt?: Date;
-  createdAt?: Date;
+  updatedAt?: DateTime;
+  createdAt?: DateTime;
 }

@@ -1,15 +1,25 @@
 import { NavLink, useNavigate, useOutletContext } from 'react-router';
 import { useState, type Dispatch, type FC, type MouseEvent, type SetStateAction } from 'react';
 import styles from "./css/Header.module.css";
-import { Adb as AdbIcon } from "@mui/icons-material";
+import { 
+    Adb as AdbIcon, 
+    NotificationAdd as NotificationAddIcon, 
+    Report as ReportIcon, 
+    AccessAlarm as AccessAlarmIcon,
+    Info as InfoIcon
+} from "@mui/icons-material";
 import {
     AppBar, Box,
     Container, Menu,
-    MenuItem, Tooltip,
+    MenuItem,
     Button, Avatar,
     Typography, IconButton,
     Toolbar,
-    Switch
+    Switch,
+    Badge,
+    MenuList,
+    Divider,
+    ListItemIcon
 } from '@mui/material';
 import type { AppDispatch } from '../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
@@ -58,6 +68,20 @@ type Context = {
 const Header: FC<any> = ({ useAIMode, setUseAIMode }) => {
     const navigate = useNavigate();
     const dispatchAction = useDispatch<AppDispatch>();
+    const notifications = [
+        {
+            type: "DEADLINE_NEARBY",
+            message: "You are close to deadline"
+        },
+        {
+            type: "DEADLINE_CROSSED",
+            message: "Your task is expired!"
+        },
+        {
+            type: "SYSTEM_LEVEL",
+            message: "Welcome to TaskNest!"
+        },
+    ]
 
     const { setNotification } = useOutletContext<Context>();
     const { currentUser } = useSelector((state: any) => state?.user);
@@ -70,6 +94,16 @@ const Header: FC<any> = ({ useAIMode, setUseAIMode }) => {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const [anchorElNotify, setAnchorElNotify] = useState<null | HTMLElement>(null);
+
+    const handleOpenNotifyMenu = (event: MouseEvent<HTMLElement>) => {
+        setAnchorElNotify(event.currentTarget);
+    };
+
+    const handleCloseNotifyMenu = () => {
+        setAnchorElNotify(null);
     };
 
     const handleLogout = async () => {
@@ -130,10 +164,10 @@ const Header: FC<any> = ({ useAIMode, setUseAIMode }) => {
                             }
                         </Box>
 
-                        <Box sx={{ flexGrow: 0, display: 'flex', width: '15%' }}>
+                        <Box sx={{ flexGrow: 0, display: 'flex', width: '18%' }}> { }
                             {/* AI Mode */}
-                            <Box sx={{ flexGrow: 1, margin: '0% 5%' }}>
-                                <Switch id='ai-mode' sx={{ top: "2%" }} onChange={handleSwitchChange} checked={useAIMode} color="warning" />
+                            <Box sx={{ flexGrow: 1, margin: '0% 5%', height: "min-content" }}>
+                                <Switch id='ai-mode' sx={{ top: "2%" }} onChange={handleSwitchChange} checked={useAIMode} color="secondary" />
                                 <label htmlFor='ai-mode' className={styles.glowingText} style={{
                                     fontSize: '1rem',
                                     fontWeight: 'bolder',
@@ -149,17 +183,65 @@ const Header: FC<any> = ({ useAIMode, setUseAIMode }) => {
                                 </label>
                             </Box>
 
-                            {/* Settings */}
-                            <Box sx={{ flexGrow: 0 }}>
-                                <Tooltip title="Open settings">
-                                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                        <Avatar alt={currentUser?.name} src="/static/images/avatar/2.jpg" />
-                                    </IconButton>
-                                </Tooltip>
+                            {/* Notification Icon */}
+                            <Box sx={{ flexGrow: 1, position: 'relative', right: '9px', height: "min-content" }}>
+                                <IconButton onClick={handleOpenNotifyMenu} sx={{ color: 'whitesmoke' }}>
+                                    <Badge badgeContent={notifications?.length} color="secondary">
+                                        <NotificationAddIcon />
+                                    </Badge>
+                                </IconButton>
 
                                 <Menu
                                     sx={{ mt: '45px' }}
-                                    id="menu-appbar"
+                                    id="notification-menu"
+                                    anchorEl={anchorElNotify}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorElNotify)}
+                                    onClose={handleCloseNotifyMenu}
+                                >
+                                    <MenuList dense>
+                                        {
+                                            notifications.map((notify, index) => (
+                                                <>
+                                                    <MenuItem key={index} onClick={handleCloseNotifyMenu}>
+                                                        <ListItemIcon>
+                                                            <AccessAlarmIcon
+                                                                sx={{ display: (notify?.type == 'DEADLINE_NEARBY') ? 'inline-block' : 'none' }}
+                                                                fontSize="small" color="error" />
+                                                            <ReportIcon
+                                                                sx={{ display: (notify?.type == 'DEADLINE_CROSSED') ? 'inline-block' : 'none' }}
+                                                                fontSize="small" color="error" />
+                                                            <InfoIcon
+                                                                sx={{ display: (notify?.type == 'SYSTEM_LEVEL') ? 'inline-block' : 'none' }}
+                                                                fontSize="small" color="info" />
+                                                        </ListItemIcon>
+                                                        <Typography>{notify?.message}</Typography>
+                                                    </MenuItem>
+                                                    <Divider sx={{ margin: 0, display: (index == notifications?.length - 1) ? 'none' : '' }} />
+                                                </>
+                                            ))
+                                        }
+                                    </MenuList>
+                                </Menu>
+                            </Box>
+
+                            {/* Settings */}
+                            <Box sx={{ flexGrow: 0, height: "min-content" }}>
+                                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                    <Avatar alt={currentUser?.name} src="/static/images/avatar/2.jpg" />
+                                </IconButton>
+
+                                <Menu
+                                    sx={{ mt: '45px' }}
+                                    id="setting-menu"
                                     anchorEl={anchorElUser}
                                     anchorOrigin={{
                                         vertical: 'top',

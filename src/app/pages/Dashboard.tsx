@@ -8,6 +8,7 @@ import type { AppDispatch } from "../redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { FETCH_TASKS } from "../redux/slices/task.slice";
 import type { NotificationModel } from "../interfaces/Notification.model";
+import { DateTime } from "luxon";
 
 type Context = {
     useAIMode: boolean,
@@ -76,7 +77,7 @@ const Dashboard = () => {
                                         </Avatar>
                                     }
                                     title={task?.title}
-                                    subheader={task?.createdAt?.toLocaleString()}
+                                    subheader={DateTime.fromISO(task?.createdAt?.toString() as string).toFormat('DDD')}
                                 />
 
                                 <br />
@@ -89,7 +90,7 @@ const Dashboard = () => {
                                     <br />
 
                                     <Typography variant="body2" color="text.secondary">
-                                        Updated On: {task?.updatedAt?.toLocaleString()}
+                                        Updated On: {DateTime.fromISO(task?.updatedAt?.toString() as string).toFormat('DDD')}
                                     </Typography>
                                 </CardContent>
                             </Card>
